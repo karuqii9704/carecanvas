@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <main>
       <header className="site-header">
-        <a href="#top" className="brand" aria-label="CC CareCanvas home"><span>CC</span><strong>CareCanvas</strong></a>
+        <a href="#top" className="brand"><span>CC</span><strong>CareCanvas</strong></a>
         <nav aria-label="Primary navigation">
           <a href="#pipeline">Pipeline</a>
           <a href="#architecture">Architecture</a>
