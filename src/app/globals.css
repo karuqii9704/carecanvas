@@ -4,7 +4,7 @@
   --paper: #f5f3ed;
   --white: #fffefa;
   --line: #d8d8cf;
-  --muted: #66736f;
+  --muted: #5f6b67;
   --teal-soft: #dfeae6;
   --accent: #d76f4b;
   --accent-dark: #ae5035;
@@ -213,7 +213,7 @@ textarea:focus { border-color: var(--ink); }
 .failure-row span, .failure-row strong { padding: 15px 20px; font-size: 11px; }
 .failure-row span { color: #afc0bb; border-left: 1px solid #365653; }
 .failure-row.header { background: #163a37; }
-.failure-row.header span { color: #809e97; border-left: 0; font-size: 9px; text-transform: uppercase; font-weight: 900; }
+.failure-row.header span { color: #8fafa8; border-left: 0; font-size: 9px; text-transform: uppercase; font-weight: 900; }
 
 footer { max-width: 1400px; margin: 0 auto; padding: 55px 40px; display: flex; justify-content: space-between; gap: 40px; }
 footer strong { display: block; }
