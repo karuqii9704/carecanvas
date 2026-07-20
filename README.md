@@ -4,6 +4,8 @@ CareCanvas is a human-gated AI illustration pipeline for health, wellbeing, and 
 
 The repository runs in **deterministic demo mode by default**. No account, API key, external request, or paid generation is needed. Live mode is opt-in and only becomes available when every required provider is configured.
 
+**Public demo:** [carecanvas.vercel.app](https://carecanvas.vercel.app/)
+
 ## What it proves
 
 - Full-stack Next.js 16 / React 19 / strict TypeScript implementation.
@@ -35,6 +37,8 @@ npm test
 npm run build
 ```
 
+Verified for this release: 19/19 tests, lint, strict TypeScript, and the production build pass. A public API smoke test completed the forced recovery path in two attempts with eight trace steps and a final deterministic QA score of 96.
+
 ## Live mode
 
 1. Copy `.env.example` to `.env.local`.
@@ -44,6 +48,8 @@ npm run build
 5. Sync `/api/inngest` with Inngest and register the public HTTPS `/api/fal/webhook` URL with fal.
 
 Live mode requires a Supabase bearer token for application routes. The browser never receives `ANTHROPIC_API_KEY`, `FAL_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, or Inngest signing credentials.
+
+The live adapters are implemented but were not run against paid provider accounts for this release. The deployment and screenshots therefore label bundled outputs as deterministic demo results, not as Claude or Flux generations.
 
 > This is an engineering portfolio prototype, not a medical product. It uses synthetic prompts and bundled vector art, does not diagnose or treat, and does not train on user uploads.
 
