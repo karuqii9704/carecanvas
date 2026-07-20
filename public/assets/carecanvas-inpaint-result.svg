@@ -1,0 +1,22 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Inpainted activity card scene</title>
+  <desc id="desc">A calm turtle character replaces the chair in the source reading nook.</desc>
+  <rect width="1200" height="900" fill="#E7E3D8"/>
+  <rect x="86" y="80" width="420" height="490" rx="12" fill="#D4E4E0" stroke="#173D3A" stroke-width="14"/>
+  <path d="M296 87V563M93 318H499" stroke="#173D3A" stroke-width="10"/>
+  <circle cx="182" cy="178" r="62" fill="#F1C36D"/>
+  <path d="M98 536C176 468 264 503 334 452C397 406 447 419 500 448V563H98V536Z" fill="#AFC9C1"/>
+  <rect y="690" width="1200" height="210" fill="#C8B69E"/>
+  <ellipse cx="416" cy="727" rx="290" ry="73" fill="#AD8C6E" opacity=".35"/>
+  <ellipse cx="423" cy="608" rx="205" ry="151" fill="#5C8E77" stroke="#173D3A" stroke-width="14"/>
+  <path d="M321 500C360 437 477 437 521 500C498 560 344 560 321 500Z" fill="#8DB18B" stroke="#173D3A" stroke-width="12"/>
+  <circle cx="371" cy="501" r="10" fill="#173D3A"/><circle cx="472" cy="501" r="10" fill="#173D3A"/>
+  <path d="M398 528C417 548 440 548 459 528" stroke="#173D3A" stroke-width="8" stroke-linecap="round"/>
+  <path d="M299 591C358 543 492 543 552 591L519 694H331L299 591Z" fill="#759E7E" stroke="#173D3A" stroke-width="12"/>
+  <path d="M339 593L513 690M507 590L336 691M425 557V705" stroke="#D4E4C0" stroke-width="8" opacity=".8"/>
+  <rect x="788" y="183" width="254" height="20" rx="10" fill="#173D3A"/>
+  <rect x="788" y="247" width="201" height="14" rx="7" fill="#738984"/>
+  <rect x="788" y="282" width="242" height="14" rx="7" fill="#738984"/>
+  <path d="M1014 641C999 550 1017 470 1074 416C1114 496 1116 579 1085 647" fill="#789D75" stroke="#173D3A" stroke-width="12"/>
+  <rect x="978" y="629" width="130" height="122" rx="16" fill="#E6A65D" stroke="#173D3A" stroke-width="12"/>
+</svg>

@@ -1,0 +1,27 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Approved red panda wellbeing illustration</title>
+  <desc id="desc">A friendly red panda holds a blank emotion card in a quiet reading nook.</desc>
+  <rect width="1200" height="900" fill="#E7E3D8"/>
+  <rect x="86" y="80" width="420" height="490" rx="12" fill="#D4E4E0" stroke="#173D3A" stroke-width="14"/>
+  <path d="M296 87V563M93 318H499" stroke="#173D3A" stroke-width="10"/>
+  <circle cx="182" cy="178" r="62" fill="#F1C36D"/>
+  <path d="M98 536C176 468 264 503 334 452C397 406 447 419 500 448V563H98V536Z" fill="#AFC9C1"/>
+  <rect y="690" width="1200" height="210" fill="#C8B69E"/>
+  <ellipse cx="437" cy="742" rx="322" ry="77" fill="#AD8C6E" opacity=".35"/>
+  <path d="M250 615C250 525 323 452 413 452H478C568 452 641 525 641 615V728H250V615Z" fill="#C96E50" stroke="#173D3A" stroke-width="14"/>
+  <path d="M361 482L313 409L399 429M532 482L578 409L491 429" fill="#A94D35" stroke="#173D3A" stroke-width="12" stroke-linejoin="round"/>
+  <ellipse cx="447" cy="532" rx="127" ry="112" fill="#B9583C" stroke="#173D3A" stroke-width="12"/>
+  <path d="M381 504C394 455 500 450 516 505C493 550 407 550 381 504Z" fill="#F4D6B8"/>
+  <circle cx="405" cy="504" r="10" fill="#173D3A"/><circle cx="486" cy="504" r="10" fill="#173D3A"/>
+  <path d="M437 533L447 539L457 533M447 539V549" stroke="#173D3A" stroke-width="7" stroke-linecap="round"/>
+  <rect x="371" y="583" width="150" height="112" rx="16" fill="#FAF7EE" stroke="#173D3A" stroke-width="10"/>
+  <circle cx="446" cy="638" r="25" fill="#F1C36D"/><path d="M430 646C440 657 454 657 464 646" stroke="#173D3A" stroke-width="5" stroke-linecap="round"/>
+  <path d="M352 605L386 625M540 605L506 625" stroke="#173D3A" stroke-width="18" stroke-linecap="round"/>
+  <rect x="788" y="183" width="254" height="20" rx="10" fill="#173D3A"/>
+  <rect x="788" y="247" width="201" height="14" rx="7" fill="#738984"/>
+  <rect x="788" y="282" width="242" height="14" rx="7" fill="#738984"/>
+  <rect x="788" y="317" width="166" height="14" rx="7" fill="#738984"/>
+  <path d="M1014 641C999 550 1017 470 1074 416C1114 496 1116 579 1085 647" fill="#789D75" stroke="#173D3A" stroke-width="12"/>
+  <path d="M1028 637C951 586 925 523 936 462C1003 488 1046 546 1052 638" fill="#92B386" stroke="#173D3A" stroke-width="12"/>
+  <rect x="978" y="629" width="130" height="122" rx="16" fill="#E6A65D" stroke="#173D3A" stroke-width="12"/>
+</svg>

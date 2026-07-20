@@ -1,0 +1,18 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Corrected illustration after bounded QA retry</title>
+  <desc id="desc">A friendly red panda holds a blank emotion card with additional whitespace.</desc>
+  <rect width="1200" height="900" fill="#EDF0E9"/>
+  <circle cx="188" cy="159" r="69" fill="#F1C36D"/>
+  <path d="M0 708C216 613 317 706 489 655C684 596 846 606 1200 711V900H0V708Z" fill="#BFD1C7"/>
+  <path d="M198 651C198 543 286 456 394 456H438C546 456 634 543 634 651V773H198V651Z" fill="#C96E50" stroke="#173D3A" stroke-width="14"/>
+  <path d="M331 474L287 393L379 427M503 474L550 393L458 427" fill="#A94D35" stroke="#173D3A" stroke-width="12" stroke-linejoin="round"/>
+  <ellipse cx="417" cy="526" rx="127" ry="112" fill="#B9583C" stroke="#173D3A" stroke-width="12"/>
+  <path d="M351 500C366 451 469 449 486 501C462 549 377 548 351 500Z" fill="#F4D6B8"/>
+  <circle cx="376" cy="501" r="10" fill="#173D3A"/><circle cx="457" cy="501" r="10" fill="#173D3A"/>
+  <path d="M407 530L417 536L427 530M417 536V547" stroke="#173D3A" stroke-width="7" stroke-linecap="round"/>
+  <rect x="342" y="581" width="150" height="112" rx="16" fill="#FAF7EE" stroke="#173D3A" stroke-width="10"/>
+  <circle cx="417" cy="637" r="25" fill="#F1C36D"/><path d="M401 645C411 656 425 656 435 645" stroke="#173D3A" stroke-width="5" stroke-linecap="round"/>
+  <path d="M323 603L357 623M511 603L477 623" stroke="#173D3A" stroke-width="18" stroke-linecap="round"/>
+  <path d="M946 713C918 593 953 488 1042 427C1095 549 1095 648 1046 720" fill="#789D75" stroke="#173D3A" stroke-width="12"/>
+  <rect x="917" y="699" width="161" height="136" rx="18" fill="#E6A65D" stroke="#173D3A" stroke-width="12"/>
+</svg>
