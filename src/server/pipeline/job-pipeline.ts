@@ -77,7 +77,7 @@ export class JobPipeline {
       current = {
         ...current,
         sceneBrief: brief,
-        trace: [...current.trace, trace("Scene brief", "brief-agent · Claude", "passed", "Intent structured into preserve / avoid constraints", 1, 618)],
+        trace: [...current.trace, trace("Scene brief", "brief-agent", "passed", "Intent structured into preserve / avoid constraints", 1, 618)],
       };
       const safety = await this.providers.intelligence.reviewSafety(current, brief);
       current = {
@@ -87,7 +87,7 @@ export class JobPipeline {
           ...current.trace,
           trace(
             "Safety review",
-            "safety-agent · Claude",
+            "safety-agent",
             safety.verdict === "pass" ? "passed" : "warning",
             safety.reasons.join(" · "),
             1,
@@ -139,7 +139,7 @@ export class JobPipeline {
           ...job.trace,
           trace(
             "Image edit",
-            job.mode === "inpaint" ? "fal.ai · Flux Fill" : "fal.ai · Flux Kontext",
+            job.mode === "inpaint" ? "image-provider · inpaint" : "image-provider · img2img",
             submission.immediateOutputUrl ? "passed" : "running",
             submission.immediateOutputUrl ? "Deterministic demo output ready" : "Async provider job submitted",
             attempt,
@@ -152,7 +152,7 @@ export class JobPipeline {
     } catch (error) {
       const failed = transition(job, "failed");
       failed.trace.push(
-        trace("Image edit", "fal.ai", "failed", error instanceof Error ? error.message : "Provider submission failed", attempt),
+        trace("Image edit", "image-provider", "failed", error instanceof Error ? error.message : "Provider submission failed", attempt),
       );
       return this.repository.save(failed);
     }
@@ -170,7 +170,7 @@ export class JobPipeline {
           ...current.trace,
           trace(
             "Visual QA",
-            "visual-qa-agent · Claude Vision",
+            "visual-qa-agent",
             qa.verdict === "pass" ? "passed" : "warning",
             `Score ${qa.score}/100 · ${qa.verdict === "retry" ? "bounded correction requested" : "quality gate evaluated"}`,
             current.attempts,

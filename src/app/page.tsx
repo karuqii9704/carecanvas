@@ -4,7 +4,7 @@ import { seedJob } from "@/domain/demo-data";
 import { Workbench } from "@/features/jobs/components/workbench";
 import { getServerEnv, isLiveConfigured } from "@/server/env";
 
-const stack = ["Next.js 16", "Claude", "fal.ai Flux", "Supabase", "Inngest"];
+const stack = ["Next.js 16", "Claude adapter", "fal.ai Flux adapters", "Supabase", "Inngest"];
 
 export default function Home() {
   const liveConfigured = isLiveConfigured(getServerEnv());
