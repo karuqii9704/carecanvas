@@ -73,13 +73,17 @@ export class JobPipeline {
   async prepare(job: CareJob): Promise<CareJob> {
     let current = transition(job, "reviewing");
     try {
+      const briefStarted = performance.now();
       const brief = await this.providers.intelligence.createBrief(current);
+      const briefDuration = Math.max(1, Math.round(performance.now() - briefStarted));
       current = {
         ...current,
         sceneBrief: brief,
-        trace: [...current.trace, trace("Scene brief", "brief-agent", "passed", "Intent structured into preserve / avoid constraints", 1, 618)],
+        trace: [...current.trace, trace("Scene brief", "brief-agent", "passed", "Intent structured into preserve / avoid constraints", 1, briefDuration)],
       };
+      const safetyStarted = performance.now();
       const safety = await this.providers.intelligence.reviewSafety(current, brief);
+      const safetyDuration = Math.max(1, Math.round(performance.now() - safetyStarted));
       current = {
         ...current,
         safetyReview: safety,
@@ -91,7 +95,7 @@ export class JobPipeline {
             safety.verdict === "pass" ? "passed" : "warning",
             safety.reasons.join(" · "),
             1,
-            344,
+            safetyDuration,
           ),
         ],
       };
@@ -128,7 +132,9 @@ export class JobPipeline {
     const attempt = job.attempts + 1;
     if (attempt > MAX_GENERATION_ATTEMPTS) throw new Error("Generation retry boundary reached.");
     try {
+      const imageStarted = performance.now();
       const submission = await this.providers.image.submit(job, job.sceneBrief, attempt);
+      const imageDuration = Math.max(1, Math.round(performance.now() - imageStarted));
       const updated: CareJob = {
         ...job,
         providerRequestId: submission.requestId,
@@ -143,7 +149,7 @@ export class JobPipeline {
             submission.immediateOutputUrl ? "passed" : "running",
             submission.immediateOutputUrl ? "Deterministic demo output ready" : "Async provider job submitted",
             attempt,
-            submission.immediateOutputUrl ? 1280 : undefined,
+            imageDuration,
             submission.requestId,
           ),
         ],
@@ -162,7 +168,9 @@ export class JobPipeline {
     if (job.status !== "generating") throw new Error("Job is not waiting for a generated image.");
     let current = transition({ ...job, outputUrl }, "qa_review");
     try {
+      const reviewStarted = performance.now();
       const qa = await this.providers.intelligence.reviewImage(current, outputUrl, current.attempts);
+      const reviewDuration = Math.max(1, Math.round(performance.now() - reviewStarted));
       current = {
         ...current,
         qaReview: qa,
@@ -174,7 +182,7 @@ export class JobPipeline {
             qa.verdict === "pass" ? "passed" : "warning",
             `Score ${qa.score}/100 · ${qa.verdict === "retry" ? "bounded correction requested" : "quality gate evaluated"}`,
             current.attempts,
-            812,
+            reviewDuration,
           ),
         ],
       };

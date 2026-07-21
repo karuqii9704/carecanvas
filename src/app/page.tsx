@@ -2,12 +2,16 @@ import { ArrowDown, Check, Github, Workflow } from "lucide-react";
 
 import { seedJob } from "@/domain/demo-data";
 import { Workbench } from "@/features/jobs/components/workbench";
-import { getServerEnv, isLiveConfigured } from "@/server/env";
-
-const stack = ["Next.js 16", "Claude adapter", "fal.ai Flux adapters", "Supabase", "Inngest"];
+import { getExecutionProfile, getServerEnv } from "@/server/env";
 
 export default function Home() {
-  const liveConfigured = isLiveConfigured(getServerEnv());
+  const env = getServerEnv();
+  const executionProfile = getExecutionProfile(env);
+  const intelligenceLabel = env.CARECANVAS_INTELLIGENCE_PROVIDER === "gemini" ? "Gemini" : "Claude";
+  const stack =
+    executionProfile === "harness"
+      ? ["Next.js 16", `${intelligenceLabel} live agents`, "Bundled image adapter", "Human approval", "Trace harness"]
+      : ["Next.js 16", `${intelligenceLabel} adapter`, "fal.ai Flux adapters", "Supabase", "Inngest"];
   return (
     <main>
       <header className="site-header">
@@ -35,8 +39,10 @@ export default function Home() {
           <div className="proof-item"><Check aria-hidden="true" /><div><strong>Bounded correction</strong><p>One QA retry, then a person decides.</p></div></div>
           <div className="proof-item"><Check aria-hidden="true" /><div><strong>Reproducible trace</strong><p>State, timing and failure reason stay visible.</p></div></div>
           <div className="proof-footer">
-            <span>{liveConfigured ? "Configured live ceiling" : "Public demo cost"}</span>
-            <strong className="tabular">{liveConfigured ? "50 jobs" : "0 provider calls"}</strong>
+            <span>{executionProfile === "live" ? "Configured live ceiling" : executionProfile === "harness" ? "Live intelligence" : "Public demo cost"}</span>
+            <strong className="tabular">
+              {executionProfile === "live" ? `${env.CARECANVAS_LIFETIME_LIMIT} jobs` : executionProfile === "harness" ? `${intelligenceLabel} API` : "0 provider calls"}
+            </strong>
           </div>
         </aside>
       </section>
@@ -44,7 +50,7 @@ export default function Home() {
       <div className="stack-strip" aria-label="Technology stack">{stack.map((item) => <span key={item}>{item}</span>)}</div>
 
       <section id="pipeline" className="pipeline-section">
-        <Workbench initialJob={seedJob} liveConfigured={liveConfigured} />
+        <Workbench initialJob={seedJob} executionProfile={executionProfile} intelligenceLabel={intelligenceLabel} />
       </section>
 
       <section id="architecture" className="architecture-section">

@@ -39,7 +39,7 @@ export const seedJob: CareJob = {
     agent: "visual-qa-agent",
   },
   outputUrl: "/assets/carecanvas-result.svg",
-  providerRequestId: "fal_seed_7wR39n0d",
+  providerRequestId: "demo_seed_7wR39n0d",
   attempts: 1,
   trace: [
     {
@@ -56,7 +56,7 @@ export const seedJob: CareJob = {
     {
       id: "seed-brief",
       name: "Scene brief",
-      agent: "brief-agent · Claude",
+      agent: "brief-agent · demo adapter",
       state: "passed",
       startedAt: "2026-07-20T05:34:10.020Z",
       completedAt: "2026-07-20T05:34:10.642Z",
@@ -67,7 +67,7 @@ export const seedJob: CareJob = {
     {
       id: "seed-safety",
       name: "Safety review",
-      agent: "safety-agent · Claude",
+      agent: "safety-agent · demo adapter",
       state: "passed",
       startedAt: "2026-07-20T05:34:10.645Z",
       completedAt: "2026-07-20T05:34:10.991Z",
@@ -87,21 +87,21 @@ export const seedJob: CareJob = {
       detail: "Approved before provider spend",
     },
     {
-      id: "seed-fal",
+      id: "seed-image",
       name: "Image edit",
-      agent: "fal.ai · Flux Kontext",
+      agent: "image-provider · bundled result",
       state: "passed",
       startedAt: "2026-07-20T05:35:02.010Z",
       completedAt: "2026-07-20T05:35:09.438Z",
       durationMs: 7428,
       attempt: 1,
-      detail: "Async provider job completed",
-      providerRequestId: "fal_••••39n0d",
+      detail: "Bundled deterministic image completed",
+      providerRequestId: "demo••••39n0d",
     },
     {
       id: "seed-qa",
       name: "Visual QA",
-      agent: "visual-qa-agent · Claude Vision",
+      agent: "visual-qa-agent · demo adapter",
       state: "passed",
       startedAt: "2026-07-20T05:35:09.441Z",
       completedAt: "2026-07-20T05:35:10.284Z",

@@ -3,10 +3,12 @@ import { NextResponse } from "next/server";
 import { approvalSchema } from "@/domain/job";
 import { inngest } from "@/inngest/client";
 import { getRequestActor } from "@/server/auth/actor";
-import { getServerEnv, isLiveConfigured } from "@/server/env";
+import { getExecutionProfile, getServerEnv } from "@/server/env";
 import { JobPipeline } from "@/server/pipeline/job-pipeline";
 import { getPipelineProviders } from "@/server/providers";
 import { getJobRepository } from "@/server/store/job-repository";
+
+export const maxDuration = 60;
 
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
@@ -18,7 +20,9 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     const job = await repository.get(id, actor.id);
     if (!job) return NextResponse.json({ error: "Job not found." }, { status: 404 });
 
-    if (isLiveConfigured(getServerEnv())) {
+    const env = getServerEnv();
+    const profile = getExecutionProfile(env);
+    if (profile === "live") {
       await inngest.send({
         name: "carecanvas/approval.responded",
         data: { jobId: id, ...approval },
@@ -26,7 +30,10 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       return NextResponse.json({ job, execution: "approval-event-sent" }, { status: 202 });
     }
     const updated = await new JobPipeline(repository, getPipelineProviders()).runDemoAfterApproval(job, approval);
-    return NextResponse.json({ job: updated, execution: "deterministic-demo" });
+    return NextResponse.json({
+      job: updated,
+      execution: profile === "harness" ? `${env.CARECANVAS_INTELLIGENCE_PROVIDER}-harness` : "deterministic-demo",
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to apply approval.";
     return NextResponse.json({ error: message }, { status: 400 });

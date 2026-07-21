@@ -3,11 +3,13 @@ import { NextResponse } from "next/server";
 import { createJobSchema } from "@/domain/job";
 import { inngest } from "@/inngest/client";
 import { getRequestActor } from "@/server/auth/actor";
-import { getServerEnv, isLiveConfigured } from "@/server/env";
+import { getExecutionProfile, getServerEnv } from "@/server/env";
 import { createDraft, JobPipeline } from "@/server/pipeline/job-pipeline";
 import { getPipelineProviders } from "@/server/providers";
 import { getRateLimiter, getUsageBudget, LimitExceededError } from "@/server/security/limits";
 import { getJobRepository } from "@/server/store/job-repository";
+
+export const maxDuration = 60;
 
 export async function POST(request: Request) {
   try {
@@ -17,16 +19,20 @@ export async function POST(request: Request) {
     getRateLimiter().check(forwarded || actor.id);
     const input = createJobSchema.parse(await request.json());
     const env = getServerEnv();
-    if (isLiveConfigured(env)) getUsageBudget(env.CARECANVAS_DAILY_LIMIT, env.CARECANVAS_LIFETIME_LIMIT).reserve(actor.id);
+    const profile = getExecutionProfile(env);
+    if (profile !== "demo") getUsageBudget(env.CARECANVAS_DAILY_LIMIT, env.CARECANVAS_LIFETIME_LIMIT).reserve(actor.id);
 
     const repository = getJobRepository();
     const draft = await repository.create(createDraft(actor.id, input));
-    if (isLiveConfigured(env)) {
+    if (profile === "live") {
       await inngest.send({ name: "carecanvas/job.requested", data: { jobId: draft.id, ownerId: actor.id } });
       return NextResponse.json({ job: draft, execution: "durable" }, { status: 202 });
     }
     const job = await new JobPipeline(repository, getPipelineProviders()).prepare(draft);
-    return NextResponse.json({ job, execution: "deterministic-demo" }, { status: 201 });
+    return NextResponse.json(
+      { job, execution: profile === "harness" ? `${env.CARECANVAS_INTELLIGENCE_PROVIDER}-harness` : "deterministic-demo" },
+      { status: 201 },
+    );
   } catch (error) {
     if (error instanceof LimitExceededError) return NextResponse.json({ error: error.message }, { status: 429 });
     const message = error instanceof Error ? error.message : "Unable to create the illustration job.";

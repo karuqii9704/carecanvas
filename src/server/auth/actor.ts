@@ -3,13 +3,13 @@ import "server-only";
 import { createClient } from "@supabase/supabase-js";
 
 import { DEMO_OWNER_ID } from "@/domain/demo-data";
-import { getServerEnv, isLiveConfigured } from "@/server/env";
+import { getExecutionProfile, getServerEnv } from "@/server/env";
 
 export type RequestActor = { id: string; mode: "demo" | "authenticated" };
 
 export async function getRequestActor(request: Request): Promise<RequestActor | null> {
   const env = getServerEnv();
-  if (!isLiveConfigured(env)) return { id: DEMO_OWNER_ID, mode: "demo" };
+  if (getExecutionProfile(env) !== "live") return { id: DEMO_OWNER_ID, mode: "demo" };
 
   const authorization = request.headers.get("authorization");
   if (!authorization?.startsWith("Bearer ")) return null;

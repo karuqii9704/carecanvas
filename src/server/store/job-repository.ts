@@ -4,7 +4,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 import { seedJob } from "@/domain/demo-data";
 import { careJobSchema, type CareJob } from "@/domain/job";
-import { getServerEnv, isLiveConfigured } from "@/server/env";
+import { getExecutionProfile, getServerEnv } from "@/server/env";
 
 export interface JobRepository {
   create(job: CareJob): Promise<CareJob>;
@@ -153,7 +153,7 @@ let memoryRepository: MemoryJobRepository | undefined;
 
 export function getJobRepository(): JobRepository {
   const env = getServerEnv();
-  if (!isLiveConfigured(env)) {
+  if (getExecutionProfile(env) !== "live") {
     memoryRepository ??= new MemoryJobRepository();
     return memoryRepository;
   }

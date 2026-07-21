@@ -9,11 +9,20 @@ import { StatusPill } from "@/features/jobs/components/status-pill";
 import { TracePanel } from "@/features/jobs/components/trace-panel";
 
 type ApiResponse = { job?: CareJob; error?: string; execution?: string };
+type ExecutionProfile = "demo" | "harness" | "live";
 
 const sourceUrl = "/assets/carecanvas-source.svg";
 const maskUrl = "/assets/carecanvas-mask.svg";
 
-export function Workbench({ initialJob, liveConfigured }: { initialJob: CareJob; liveConfigured: boolean }) {
+export function Workbench({
+  initialJob,
+  executionProfile,
+  intelligenceLabel,
+}: {
+  initialJob: CareJob;
+  executionProfile: ExecutionProfile;
+  intelligenceLabel: "Gemini" | "Claude";
+}) {
   const [job, setJob] = useState(initialJob);
   const [mode, setMode] = useState<EditMode>("img2img");
   const [prompt, setPrompt] = useState(
@@ -23,9 +32,10 @@ export function Workbench({ initialJob, liveConfigured }: { initialJob: CareJob;
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const durableLive = executionProfile === "live";
 
   useEffect(() => {
-    if (!liveConfigured || !["draft", "reviewing", "generating", "qa_review"].includes(job.status)) return;
+    if (!durableLive || !["draft", "reviewing", "generating", "qa_review"].includes(job.status)) return;
     const timer = window.setInterval(async () => {
       const response = await fetch(`/api/jobs/${job.id}`, { cache: "no-store" });
       if (!response.ok) return;
@@ -33,7 +43,7 @@ export function Workbench({ initialJob, liveConfigured }: { initialJob: CareJob;
       if (payload.job) setJob(payload.job);
     }, 2_000);
     return () => window.clearInterval(timer);
-  }, [job.id, job.status, liveConfigured]);
+  }, [durableLive, job.id, job.status]);
 
   async function submitJob(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -58,9 +68,11 @@ export function Workbench({ initialJob, liveConfigured }: { initialJob: CareJob;
       if (!response.ok || !payload.job) throw new Error(payload.error ?? "The job could not be created.");
       setJob(payload.job);
       setNotice(
-        payload.execution === "deterministic-demo"
-          ? "Three gates passed. Review the agent brief before spending provider credits."
-          : "Durable workflow accepted. The trace will update as agents finish.",
+        payload.execution?.endsWith("-harness")
+          ? `${intelligenceLabel} returned a structured brief and safety decision. Review it before the image stage.`
+          : payload.execution === "deterministic-demo"
+            ? "Three deterministic gates passed. Review the agent brief before continuing."
+            : "Durable workflow accepted. The trace will update as agents finish.",
       );
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Unexpected request error.");
@@ -104,7 +116,7 @@ export function Workbench({ initialJob, liveConfigured }: { initialJob: CareJob;
           <span className="eyebrow">INTERACTIVE PIPELINE</span>
           <h2>Move from brief to approved visual.</h2>
         </div>
-        <div className="mode-indicator"><span aria-hidden="true" /> {liveConfigured ? "Live providers" : "Safe demo mode"}</div>
+        <div className="mode-indicator"><span aria-hidden="true" /> {executionProfile === "live" ? "Durable live mode" : executionProfile === "harness" ? `${intelligenceLabel} harness` : "Safe demo mode"}</div>
       </div>
 
       <div className="workbench-grid">
@@ -147,7 +159,16 @@ export function Workbench({ initialJob, liveConfigured }: { initialJob: CareJob;
             </button>
           </form>
 
-          <div className="privacy-line"><LockKeyhole aria-hidden="true" /><span>Provider credentials are server-only. Demo mode makes zero external calls.</span></div>
+          <div className="privacy-line">
+            <LockKeyhole aria-hidden="true" />
+            <span>
+              {executionProfile === "harness"
+                ? `${intelligenceLabel} credentials stay server-only. The image stage uses bundled artwork.`
+                : executionProfile === "live"
+                  ? "Provider credentials stay server-only. Usage is bounded before generation."
+                  : "Provider credentials are server-only. Demo mode makes zero external calls."}
+            </span>
+          </div>
         </section>
 
         <section className="preview-panel" aria-labelledby="preview-title">
@@ -174,7 +195,7 @@ export function Workbench({ initialJob, liveConfigured }: { initialJob: CareJob;
 
           {job.status === "awaiting_approval" ? (
             <div className="approval-box">
-              <div><strong>Spend gate</strong><p>A person must approve this brief before Flux runs.</p></div>
+              <div><strong>Spend gate</strong><p>A person must approve this brief before the image stage runs.</p></div>
               <div className="approval-actions">
                 <button type="button" className="secondary-button" onClick={() => decide("rejected")} disabled={busy}>Reject</button>
                 <button type="button" className="primary-button small" onClick={() => decide("approved")} disabled={busy}><Check aria-hidden="true" /> Approve & generate</button>
