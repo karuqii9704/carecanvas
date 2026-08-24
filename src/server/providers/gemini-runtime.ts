@@ -389,6 +389,20 @@ export class GeminiIntelligenceProvider implements IntelligenceProvider {
   }
 
   async reviewImage(job: CareJob, outputUrl: string, attempt: number): Promise<QaReview> {
+    // ponytail: reliability drill must behave identically in every mode — deterministic first-attempt rejection
+    if (job.simulateFirstQaFailure && attempt === 1) {
+      return {
+        verdict: "retry",
+        score: 71,
+        correction: "Remove accidental micro-text and restore clear whitespace around the activity card.",
+        checks: [
+          { label: "Brief alignment", passed: true, note: "Subject and tone match the approved brief." },
+          { label: "Child-safe visual", passed: true, note: "No unsafe visual content detected." },
+          { label: "Text integrity", passed: false, note: "Small generated marks resemble unreadable text." },
+        ],
+        agent: "visual-qa-agent",
+      };
+    }
     const started = performance.now();
     let image: GeminiImageInput;
     try {
