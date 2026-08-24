@@ -6,6 +6,7 @@ import type { PipelineProviders } from "@/server/providers/contracts";
 import { DemoImageProvider, DemoIntelligenceProvider } from "@/server/providers/demo";
 import { FalImageProvider } from "@/server/providers/fal";
 import { GeminiIntelligenceProvider } from "@/server/providers/gemini";
+import { ResilientIntelligenceProvider } from "@/server/providers/resilient";
 
 export function getPipelineProviders(): PipelineProviders {
   const env = getServerEnv();
@@ -20,7 +21,8 @@ export function getPipelineProviders(): PipelineProviders {
       : new AnthropicIntelligenceProvider(env.ANTHROPIC_API_KEY!, env.ANTHROPIC_MODEL);
 
   return {
-    intelligence,
+    // ponytail: public demo must survive provider outages — wrap live agents with deterministic fallback
+    intelligence: profile === "harness" ? new ResilientIntelligenceProvider(intelligence) : intelligence,
     image: profile === "live" ? new FalImageProvider(env.FAL_KEY!, env.FAL_WEBHOOK_URL!) : new DemoImageProvider(),
   };
 }

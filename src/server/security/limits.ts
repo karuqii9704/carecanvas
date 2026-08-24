@@ -17,15 +17,25 @@ export class UsageBudget {
     private readonly lifetimeLimit: number,
   ) {}
 
-  reserve(ownerId: string, now = new Date()): void {
+  reserve(ownerKey: string, now = new Date()): void {
     const day = now.toISOString().slice(0, 10);
-    const record = this.usage.get(ownerId) ?? { dates: [], lifetime: 0 };
+    const record = this.usage.get(ownerKey) ?? { dates: [], lifetime: 0 };
     const todayCount = record.dates.filter((date) => date === day).length;
     if (todayCount >= this.dailyLimit) throw new LimitExceededError("Daily live-generation limit reached.");
     if (record.lifetime >= this.lifetimeLimit) throw new LimitExceededError("Public demo generation budget is exhausted.");
     record.dates.push(day);
     record.lifetime += 1;
-    this.usage.set(ownerId, record);
+    this.usage.set(ownerKey, record);
+  }
+
+  usedToday(ownerKey = "__probe__", now = new Date()): number {
+    const day = now.toISOString().slice(0, 10);
+    const record = this.usage.get(ownerKey);
+    if (record) return record.dates.filter((date) => date === day).length;
+    // ponytail: O(n) scan over per-key maps; fine at demo traffic, index if it grows
+    let total = 0;
+    for (const entry of this.usage.values()) total += entry.dates.filter((date) => date === day).length;
+    return total;
   }
 }
 
@@ -60,7 +70,8 @@ export function getRateLimiter(): SlidingWindowRateLimiter {
   return globalLimits.__carecanvasRateLimiter;
 }
 
-export function getUsageBudget(daily = 1, lifetime = 50): UsageBudget {
+export function getUsageBudget(daily = 20, lifetime = 60): UsageBudget {
+  // ponytail: key by owner so the demo budget is per-visitor, not one shared pool
   globalLimits.__carecanvasBudget ??= new UsageBudget(daily, lifetime);
   return globalLimits.__carecanvasBudget;
 }

@@ -8,7 +8,7 @@ import type { CareJob, EditMode } from "@/domain/job";
 import { StatusPill } from "@/features/jobs/components/status-pill";
 import { TracePanel } from "@/features/jobs/components/trace-panel";
 
-type ApiResponse = { job?: CareJob; error?: string; execution?: string };
+type ApiResponse = { job?: CareJob; error?: string; execution?: string; trialsRemaining?: number };
 type ExecutionProfile = "demo" | "harness" | "live";
 
 const sourceUrl = "/assets/carecanvas-source.svg";
@@ -32,6 +32,7 @@ export function Workbench({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [trialsLeft, setTrialsLeft] = useState<number | null>(null);
   const durableLive = executionProfile === "live";
 
   useEffect(() => {
@@ -65,8 +66,12 @@ export function Workbench({
         }),
       });
       const payload = (await response.json()) as ApiResponse;
-      if (!response.ok || !payload.job) throw new Error(payload.error ?? "The job could not be created.");
+      if (!response.ok || !payload.job) {
+        if (typeof payload.trialsRemaining === "number") setTrialsLeft(payload.trialsRemaining);
+        throw new Error(payload.error ?? "The job could not be created.");
+      }
       setJob(payload.job);
+      if (typeof payload.trialsRemaining === "number") setTrialsLeft(payload.trialsRemaining);
       setNotice(
         payload.execution?.endsWith("-harness")
           ? `${intelligenceLabel} returned a structured brief and safety decision. Review it before the image stage.`
@@ -116,7 +121,17 @@ export function Workbench({
           <span className="eyebrow">INTERACTIVE PIPELINE</span>
           <h2>Move from brief to approved visual.</h2>
         </div>
-        <div className="mode-indicator"><span aria-hidden="true" /> {executionProfile === "live" ? "Durable live mode" : executionProfile === "harness" ? `${intelligenceLabel} harness` : "Safe demo mode"}</div>
+        <div className="mode-indicator">
+          <span aria-hidden="true" />{" "}
+          {executionProfile === "live"
+            ? "Durable live mode"
+            : executionProfile === "harness"
+              ? `${intelligenceLabel} harness`
+              : "Safe demo mode"}
+          {typeof trialsLeft === "number" ? (
+            <span className="trial-count">· {trialsLeft} trials left today</span>
+          ) : null}
+        </div>
       </div>
 
       <div className="workbench-grid">

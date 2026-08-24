@@ -19,8 +19,8 @@ const serverEnvSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.url().optional(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: optionalString,
   SUPABASE_SERVICE_ROLE_KEY: optionalString,
-  CARECANVAS_DAILY_LIMIT: z.coerce.number().int().positive().default(1),
-  CARECANVAS_LIFETIME_LIMIT: z.coerce.number().int().positive().default(50),
+  CARECANVAS_DAILY_LIMIT: z.coerce.number().int().positive().default(20),
+  CARECANVAS_LIFETIME_LIMIT: z.coerce.number().int().positive().default(60),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
