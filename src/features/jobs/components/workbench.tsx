@@ -218,6 +218,18 @@ export function Workbench({
             </div>
           ) : null}
 
+          {job.status === "needs_human_review" ? (
+            <div className="approval-box">
+              <div>
+                <strong>Human review queue</strong>
+                <p>
+                  The bounded QA retry still missed the brief, so the pipeline stopped for a person instead of looping — that is
+                  the designed outcome, not an error. Inspect the trace below and restore the seeded run to try again.
+                </p>
+              </div>
+            </div>
+          ) : null}
+
           {job.qaReview ? (
             <div className="qa-score">
               <div><span>Visual QA score</span><strong className="tabular">{job.qaReview.score}<small>/100</small></strong></div>
