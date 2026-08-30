@@ -150,6 +150,8 @@ textarea:focus { border-color: var(--ink); }
 .image-stage { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 12px; background: #e7e3d8; border: 1px solid var(--line); }
 .image-stage img { object-fit: cover; }
 .image-label { position: absolute; left: 13px; bottom: 13px; z-index: 1; padding: 7px 9px; background: rgba(16,46,44,.9); color: white; border-radius: 5px; font-size: 9px; font-weight: 900; }
+.field-scope { margin: 8px 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; text-wrap: pretty; }
+.image-note { margin: 10px 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; text-wrap: pretty; }
 .brief-review { margin-top: 18px; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: #faf9f5; }
 .brief-heading { display: flex; align-items: center; gap: 8px; font-size: 12px; }
 .brief-heading svg { width: 17px; height: 17px; color: var(--success); }

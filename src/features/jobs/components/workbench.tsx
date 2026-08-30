@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ArrowRight, Check, FlaskConical, ImageIcon, LockKeyhole, RotateCcw, ShieldCheck, Sparkles } from "lucide-react";
 
 import type { CareJob, EditMode } from "@/domain/job";
+import { describeImageStage } from "@/features/jobs/image-stage";
 import { StatusPill } from "@/features/jobs/components/status-pill";
 import { TracePanel } from "@/features/jobs/components/trace-panel";
 
@@ -113,6 +114,7 @@ export function Workbench({
   }
 
   const output = job.outputUrl ?? sourceUrl;
+  const imageStage = describeImageStage(executionProfile, Boolean(job.outputUrl));
 
   return (
     <div className="workbench">
@@ -157,7 +159,14 @@ export function Workbench({
             </fieldset>
 
             <label className="field-label" htmlFor="prompt">Direction</label>
-            <textarea id="prompt" value={prompt} onChange={(event) => setPrompt(event.target.value)} minLength={20} maxLength={1200} rows={6} />
+            <textarea id="prompt" value={prompt} onChange={(event) => setPrompt(event.target.value)} minLength={20} maxLength={1200} rows={6} aria-describedby={durableLive ? undefined : "prompt-scope"} />
+            {/* Say what the direction actually drives before it is written. The
+                same boundary stated only after generation reads as a failure. */}
+            {durableLive ? null : (
+              <p className="field-scope" id="prompt-scope">
+                Outside live mode your direction drives the agent brief, safety decision, and QA — not the picture. The image stage returns fixed artwork.
+              </p>
+            )}
             <div className="field-meta"><span>Audience · children 6–9</span><span className="tabular">{prompt.length}/1,200</span></div>
 
             <label className="reliability-toggle">
@@ -194,8 +203,10 @@ export function Workbench({
 
           <div className="image-stage">
             <Image src={output} alt={job.outputUrl ? "CareCanvas generated wellbeing illustration" : "Source illustration awaiting generation"} fill priority sizes="(max-width: 900px) 100vw, 48vw" />
-            <span className="image-label">{job.outputUrl ? "RELEASE CANDIDATE" : "SOURCE"}</span>
+            <span className="image-label">{imageStage.label}</span>
           </div>
+
+          {imageStage.note ? <p className="image-note">{imageStage.note}</p> : null}
 
           {job.sceneBrief ? (
             <div className="brief-review">
