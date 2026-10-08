@@ -9,7 +9,7 @@ import { describeImageStage } from "@/features/jobs/image-stage";
 import { StatusPill } from "@/features/jobs/components/status-pill";
 import { TracePanel } from "@/features/jobs/components/trace-panel";
 
-type ApiResponse = { job?: CareJob; error?: string; execution?: string; trialsRemaining?: number };
+type ApiResponse = { job?: CareJob; jobToken?: string; error?: string; execution?: string; trialsRemaining?: number };
 type ExecutionProfile = "demo" | "harness" | "live";
 
 const sourceUrl = "/assets/carecanvas-source.svg";
@@ -25,6 +25,8 @@ export function Workbench({
   intelligenceLabel: "Gemini" | "Claude";
 }) {
   const [job, setJob] = useState(initialJob);
+  // Signed snapshot of the job awaiting approval, so any server instance can resume it.
+  const [jobToken, setJobToken] = useState<string | undefined>(undefined);
   const [mode, setMode] = useState<EditMode>("img2img");
   const [prompt, setPrompt] = useState(
     "Turn the central character into a calm, friendly red panda holding an emotion card. Preserve the quiet reading nook and leave generous space for facilitator copy.",
@@ -72,6 +74,7 @@ export function Workbench({
         throw new Error(payload.error ?? "The job could not be created.");
       }
       setJob(payload.job);
+      setJobToken(payload.jobToken);
       if (typeof payload.trialsRemaining === "number") setTrialsLeft(payload.trialsRemaining);
       setNotice(
         payload.execution?.endsWith("-harness")
@@ -94,11 +97,16 @@ export function Workbench({
       const response = await fetch(`/api/jobs/${job.id}/approval`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ decision, note: decision === "approved" ? "Brief checked by content lead." : "Creative direction needs revision." }),
+        body: JSON.stringify({
+          decision,
+          note: decision === "approved" ? "Brief checked by content lead." : "Creative direction needs revision.",
+          jobToken,
+        }),
       });
       const payload = (await response.json()) as ApiResponse;
       if (!response.ok || !payload.job) throw new Error(payload.error ?? "Approval could not be recorded.");
       setJob(payload.job);
+      setJobToken(undefined);
       setNotice(decision === "approved" ? "Human approval recorded. The bounded pipeline continued." : "Stopped before image generation.");
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Unexpected approval error.");
@@ -109,6 +117,7 @@ export function Workbench({
 
   function resetDemo() {
     setJob(initialJob);
+    setJobToken(undefined);
     setError(null);
     setNotice("Seeded evidence restored.");
   }
@@ -164,7 +173,7 @@ export function Workbench({
                 same boundary stated only after generation reads as a failure. */}
             {durableLive ? null : (
               <p className="field-scope" id="prompt-scope">
-                Outside live mode your direction drives the agent brief, safety decision, and QA — not the picture. The image stage returns fixed artwork.
+                Outside live mode a local illustrator draws your direction: name an animal (fox, owl, cat…), something to hold (book, balloon, star…), a place (garden, beach, night…) and a mood (happy, sleepy, curious).
               </p>
             )}
             <div className="field-meta"><span>Audience · children 6–9</span><span className="tabular">{prompt.length}/1,200</span></div>
@@ -187,7 +196,7 @@ export function Workbench({
             <LockKeyhole aria-hidden="true" />
             <span>
               {executionProfile === "harness"
-                ? `${intelligenceLabel} credentials stay server-only. The image stage uses bundled artwork.`
+                ? `${intelligenceLabel} credentials stay server-only. The image stage renders locally at no cost.`
                 : executionProfile === "live"
                   ? "Provider credentials stay server-only. Usage is bounded before generation."
                   : "Provider credentials are server-only. Demo mode makes zero external calls."}
@@ -202,7 +211,7 @@ export function Workbench({
           </div>
 
           <div className="image-stage">
-            <Image src={output} alt={job.outputUrl ? "CareCanvas generated wellbeing illustration" : "Source illustration awaiting generation"} fill priority sizes="(max-width: 900px) 100vw, 48vw" />
+            <Image src={output} alt={job.outputUrl ? "CareCanvas generated wellbeing illustration" : "Source illustration awaiting generation"} fill priority unoptimized={output.startsWith("/")} sizes="(max-width: 900px) 100vw, 48vw" />
             <span className="image-label">{imageStage.label}</span>
           </div>
 

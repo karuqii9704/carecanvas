@@ -62,12 +62,19 @@ export class SlidingWindowRateLimiter {
 
 const globalLimits = globalThis as typeof globalThis & {
   __carecanvasRateLimiter?: SlidingWindowRateLimiter;
+  __carecanvasApprovalLimiter?: SlidingWindowRateLimiter;
   __carecanvasBudget?: UsageBudget;
 };
 
 export function getRateLimiter(): SlidingWindowRateLimiter {
   globalLimits.__carecanvasRateLimiter ??= new SlidingWindowRateLimiter(6, 10 * 60 * 1000);
   return globalLimits.__carecanvasRateLimiter;
+}
+
+/** Approvals replay a signed snapshot, so they need their own per-client ceiling. */
+export function getApprovalRateLimiter(): SlidingWindowRateLimiter {
+  globalLimits.__carecanvasApprovalLimiter ??= new SlidingWindowRateLimiter(12, 10 * 60 * 1000);
+  return globalLimits.__carecanvasApprovalLimiter;
 }
 
 export function getUsageBudget(daily = 20, lifetime = 60): UsageBudget {

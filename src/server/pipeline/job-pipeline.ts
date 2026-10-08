@@ -147,7 +147,7 @@ export class JobPipeline {
             "Image edit",
             job.mode === "inpaint" ? "image-provider · inpaint" : "image-provider · img2img",
             submission.immediateOutputUrl ? "passed" : "running",
-            submission.immediateOutputUrl ? "Deterministic demo output ready" : "Async provider job submitted",
+            submission.immediateOutputUrl ? "Rendered locally from the approved direction" : "Async provider job submitted",
             attempt,
             imageDuration,
             submission.requestId,

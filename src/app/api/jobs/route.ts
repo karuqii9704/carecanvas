@@ -6,6 +6,7 @@ import { getRequestActor } from "@/server/auth/actor";
 import { getExecutionProfile, getServerEnv } from "@/server/env";
 import { createDraft, JobPipeline } from "@/server/pipeline/job-pipeline";
 import { getPipelineProviders } from "@/server/providers";
+import { signJobToken } from "@/server/security/job-token";
 import { getRateLimiter, getUsageBudget, LimitExceededError } from "@/server/security/limits";
 import { getJobRepository } from "@/server/store/job-repository";
 
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         job,
+        jobToken: job.status === "awaiting_approval" ? signJobToken(env, job) : undefined,
         execution: profile === "harness" ? `${env.CARECANVAS_INTELLIGENCE_PROVIDER}-harness` : "deterministic-demo",
         trialsRemaining: trialsRemaining(forwarded),
       },

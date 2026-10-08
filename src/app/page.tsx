@@ -10,7 +10,7 @@ export default function Home() {
   const intelligenceLabel = env.CARECANVAS_INTELLIGENCE_PROVIDER === "gemini" ? "Gemini" : "Claude";
   const stack =
     executionProfile === "harness"
-      ? ["Next.js 16", `${intelligenceLabel} live agents`, "Bundled image adapter", "Human approval", "Trace harness"]
+      ? ["Next.js 16", `${intelligenceLabel} live agents`, "Local illustrator", "Human approval", "Trace harness"]
       : ["Next.js 16", `${intelligenceLabel} adapter`, "fal.ai Flux adapters", "Supabase", "Inngest"];
   return (
     <main>

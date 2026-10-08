@@ -8,7 +8,7 @@ CareCanvas uses one provider-neutral pipeline contract across three deliberately
 |---|---|---|---|
 | Intelligence provider | Deterministic local adapter | Gemini or Anthropic API | Gemini or Anthropic API |
 | Brief, safety, visual QA | Deterministic structured results | Real selected-provider calls | Real selected-provider calls |
-| Image provider | Bundled deterministic adapter | Bundled deterministic adapter | fal.ai Flux Kontext or Flux Fill |
+| Image provider | Deterministic local illustrator | Deterministic local illustrator | fal.ai Flux Kontext or Flux Fill |
 | Repository | Process-memory | Process-memory | Supabase Postgres |
 | Orchestration | Synchronous request path | Synchronous request path | Durable Inngest events and waits |
 | Authentication | Synthetic local actor | Synthetic local actor | Supabase bearer token |
@@ -24,7 +24,7 @@ sequenceDiagram
     participant API as Next.js API
     participant Agent as Gemini or Claude
     participant Human as Content lead
-    participant Image as Deterministic image adapter
+    participant Image as Local illustrator
     participant Memory as In-memory repository
 
     User->>API: POST /api/jobs
@@ -35,12 +35,14 @@ sequenceDiagram
     Agent-->>API: Schema-valid decision
     API->>Memory: awaiting_approval or blocked
     Human->>API: Approval decision
-    API->>Image: Submit bundled edit
-    Image-->>API: Bundled output
+    API->>Image: Render approved direction
+    Image-->>API: /api/scene/… SVG
     API->>Agent: Visual QA with approved brief
     Agent-->>API: pass, retry, or human_review
     API->>Memory: Terminal state or one corrected retry
 ```
+
+Between the two harness requests the browser carries an HMAC-signed job snapshot, so the approval can be served by a different serverless instance than the one that ran the brief and safety stages.
 
 This profile is intentionally not a partial live deployment. It isolates the intelligence boundary so a real model can be evaluated without enabling fal webhooks, durable events, persistent user data, or image-provider spend.
 
@@ -95,7 +97,7 @@ Gemini adds the following fail-closed controls:
 - deterministic blocking rules stop clearly high-risk or diagnostic requests before model spend;
 - conflicting structured safety flags cannot be converted into a pass;
 - a provider safety block becomes human review rather than silent approval;
-- image inputs are limited to bundled/local application assets or approved `fal.media` HTTPS outputs and are rasterized within a bounded size;
+- image inputs are limited to bundled/local application assets, locally rendered `/api/scene/` illustrations, or approved `fal.media` HTTPS outputs and are rasterized within a bounded size;
 - auth, quota, timeout, availability, contract, safety, and vision-input failures become sanitized stage errors;
 - transport attempts are bounded, and model correction remains limited to one generation retry.
 

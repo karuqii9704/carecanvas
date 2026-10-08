@@ -26,11 +26,28 @@ The public application runs in **deterministic demo mode by default**. It needs 
 
 | Profile | Intelligence | Image stage | State and orchestration | Intended use |
 |---|---|---|---|---|
-| `demo` | Deterministic local adapter | Deterministic bundled image adapter | In-memory repository; synchronous pipeline | Public, free, repeatable demonstration |
-| `harness` | Real Gemini **or** Anthropic calls | Deterministic bundled image adapter | In-memory repository; synchronous pipeline | Bounded provider verification without fal, Inngest, or Supabase |
+| `demo` | Deterministic local adapter | Deterministic local illustrator | In-memory repository; synchronous pipeline | Public, free, repeatable demonstration |
+| `harness` | Real Gemini **or** Anthropic calls | Deterministic local illustrator | In-memory repository; synchronous pipeline | Bounded provider verification without fal, Inngest, or Supabase |
 | `live` | Real Gemini **or** Anthropic calls | fal.ai Flux | Supabase persistence/Auth and durable Inngest execution | Fully configured end-to-end deployment |
 
 `CARECANVAS_INTELLIGENCE_PROVIDER=gemini` selects Gemini; `anthropic` selects Claude. The setting only causes external model calls in `harness` or `live`. In `demo`, both intelligence and image work remain deterministic regardless of the selected provider label.
+
+### The local illustrator
+
+Outside `live`, the image stage does not return fixed artwork. A deterministic flat-vector illustrator (`src/domain/scene.ts`) reads the direction and draws it from a closed vocabulary:
+
+| Field | Examples it recognises (English and Indonesian) |
+|---|---|
+| Subject | red panda, panda, fox, bear, cat, dog, rabbit, owl, turtle, penguin, elephant, lion, frog, mouse, koala (`kucing`, `rubah`, `burung hantu`, …) |
+| Held object | emotion card, book, balloon, flower, star, heart, ball |
+| Setting | reading nook, garden, classroom, night/bedtime, beach, forest |
+| Palette / mood | warm, cool, pastel, sunny · calm, happy, sleepy, curious |
+
+The scene is addressed as `/api/scene/<subject>~<object>~<setting>~<palette>~<mood>~<mode>~<variant>.svg`. Every segment is an enum, so no user text reaches the SVG and the picture cannot contain lettering. Inpainting keeps the source room and only replaces the armchair region. The reliability drill renders stray micro-marks on attempt one, which visual QA rejects before the clean retry. In `harness`, Gemini or Claude visual QA receives the same render rasterized to PNG, so its score reflects what was actually drawn. It is a stand-in for an image model, not one: it makes no external call and costs nothing.
+
+### Serverless-safe approvals
+
+`demo` and `harness` keep jobs in process memory, and on Vercel the request that creates a job and the one that approves it can reach different instances. The create response therefore includes an HMAC-signed snapshot of the job (`jobToken`); the browser returns it with the approval so any instance can resume the run. Altered, expired (24 h), or foreign tokens are rejected. Set `CARECANVAS_STATE_SECRET` to choose the signing key; otherwise it is derived from the configured provider key.
 
 ## Run the deterministic demo
 
@@ -100,7 +117,7 @@ Live mode fails configuration validation when the selected intelligence key or a
 
 The fal, Inngest, and Supabase adapters are preserved as the durable live architecture, but this repository does not claim that the complete paid-provider path has been production-certified.
 
-> This is an engineering portfolio prototype, not a medical product. It uses synthetic prompts and bundled art, does not diagnose or treat, and does not train on user uploads.
+> This is an engineering portfolio prototype, not a medical product. It uses synthetic prompts and locally drawn art, does not diagnose or treat, and does not train on user uploads.
 
 ## Documentation
 

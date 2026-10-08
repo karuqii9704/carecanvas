@@ -20,7 +20,7 @@ CareCanvas distinguishes three profiles so a portfolio demonstration cannot be c
 | Provider harness | Real Gemini or Anthropic brief/safety/visual-QA contracts against synthetic inputs | Real image generation, Inngest, Supabase persistence |
 | Durable live | Selected intelligence provider, fal image generation, Inngest waits/retries, Supabase Auth/data/RLS | Nothing implicit: every service must be explicitly configured |
 
-The public demo uses bundled art and deterministic adapters. This keeps the recruiter experience fast, repeatable, and free while proving the same domain branches used by the provider-backed profiles.
+The public demo uses a deterministic local illustrator that draws the requested subject, object, setting, and mood, plus deterministic adapters. This keeps the recruiter experience fast, repeatable, and free while proving the same domain branches used by the provider-backed profiles.
 
 ## Gemini integration
 

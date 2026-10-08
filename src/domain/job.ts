@@ -21,8 +21,8 @@ export const traceStates = ["queued", "running", "passed", "warning", "failed", 
 export type TraceState = (typeof traceStates)[number];
 
 const publicAssetOrUrl = z.string().refine(
-  (value) => value.startsWith("/assets/") || z.url().safeParse(value).success,
-  "Use an HTTPS URL or a bundled /assets/ path.",
+  (value) => value.startsWith("/assets/") || value.startsWith("/api/scene/") || z.url().safeParse(value).success,
+  "Use an HTTPS URL, a bundled /assets/ path, or a rendered /api/scene/ path.",
 );
 
 export const createJobSchema = z

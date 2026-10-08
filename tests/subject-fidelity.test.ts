@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { createJobSchema, type CareJob } from "@/domain/job";
+import { parseSceneSlug } from "@/domain/scene";
 import { describeImageStage } from "@/features/jobs/image-stage";
 import { createDraft, JobPipeline } from "@/server/pipeline/job-pipeline";
 import { DemoImageProvider, DemoIntelligenceProvider } from "@/server/providers/demo";
@@ -24,10 +25,9 @@ const catInput = createJobSchema.parse({
 });
 
 /**
- * Asking the demo for a cat returns bundled red-panda artwork, and before
- * approval the panel falls back to the character-free source. Neither is a
- * generation failure, so the image stage has to say which one you are looking
- * at rather than leaving a reader to guess.
+ * Asking the demo for a cat must draw a cat, and before approval the panel
+ * falls back to the character-free source. The image stage has to say which
+ * one you are looking at rather than leaving a reader to guess.
  */
 describe("demo image-stage honesty", () => {
   let repository: TestRepository;
@@ -51,20 +51,20 @@ describe("demo image-stage honesty", () => {
     expect(stage.note).toMatch(/not a result/i);
   });
 
-  it("still returns bundled artwork that ignores the requested subject", async () => {
+  it("draws the requested subject instead of fixed artwork", async () => {
     const prepared = await pipeline.prepare(await repository.create(createDraft("owner-1", catInput)));
     const completed = await pipeline.runDemoAfterApproval(prepared, { decision: "approved", note: "Checked." });
 
     expect(completed.status).toBe("completed");
-    // Unchanged behaviour, asserted so the mismatch is documented rather than surprising.
-    expect(completed.outputUrl).toBe("/assets/carecanvas-result.svg");
+    expect(parseSceneSlug(completed.outputUrl!)).toMatchObject({ subject: "cat", object: "emotion-card", setting: "reading-nook" });
+    expect(completed.qaReview?.checks[0]?.note).toMatch(/cat/);
   });
 
-  it("labels bundled output as a stand-in outside live mode", async () => {
+  it("labels local output as a render, not a model generation, outside live mode", async () => {
     for (const profile of ["demo", "harness"] as const) {
       const stage = describeImageStage(profile, true);
-      expect(stage.label).toBe("BUNDLED STAND-IN");
-      expect(stage.note).toMatch(/will not show the subject you asked for/i);
+      expect(stage.label).toBe("LOCAL RENDER");
+      expect(stage.note).toMatch(/no paid image model/i);
     }
   });
 

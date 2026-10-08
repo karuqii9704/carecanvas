@@ -9,10 +9,10 @@ export type ImageStageCopy = {
 
 /**
  * The preview panel is headed "Output review" but falls back to the source
- * illustration until generation has run, and outside `live` the image is fixed
- * bundled artwork that cannot depict whatever subject the direction asks for.
- * Both cases need saying at the image, not only in the README, or a reader
- * takes the character-free source for a failed generation.
+ * illustration until generation has run, and outside `live` the picture comes
+ * from a deterministic local illustrator rather than an image model. Both
+ * cases need saying at the image, not only in the README, or a reader takes
+ * the character-free source for a failed generation.
  */
 export function describeImageStage(profile: ExecutionProfile, hasOutput: boolean): ImageStageCopy {
   if (!hasOutput) {
@@ -27,7 +27,7 @@ export function describeImageStage(profile: ExecutionProfile, hasOutput: boolean
   }
 
   return {
-    label: "BUNDLED STAND-IN",
-    note: "The agent pipeline above ran for real, but this demo ships fixed artwork instead of calling an image provider — so the picture will not show the subject you asked for.",
+    label: "LOCAL RENDER",
+    note: "Drawn from your direction by a deterministic flat-vector illustrator — no paid image model. Live mode swaps in fal.ai Flux for the same approved brief.",
   };
 }
